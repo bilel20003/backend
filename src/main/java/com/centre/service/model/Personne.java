@@ -1,13 +1,9 @@
 package com.centre.service.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
-@Table 
+@Table(name = "personne") // Nom explicite pour la table
 public class Personne {
 
     @Id
@@ -15,26 +11,25 @@ public class Personne {
     private Long id;
 
     private String nom;
-    private String email;
+    private String prenom; // Ajout du prénom
     private String motDePasse;
-    private String adresse;
-    
     private String numTel;
-    private String role;
-    
+
+    @Enumerated(EnumType.STRING) // Stocke la valeur sous forme de texte dans la BDD
+    private Role role; // Restriction des valeurs possibles
+
     // Constructeurs
     public Personne() {}
 
-    public Personne(String nom, String email, String motDePasse, String adresse, String numTel, String role) {
+    public Personne(String nom, String prenom, String motDePasse, String numTel, Role role) {
         this.nom = nom;
-        this.email = email;
+        this.prenom = prenom;
         this.motDePasse = motDePasse;
-        this.adresse = adresse;
         this.numTel = numTel;
         this.role = role;
     }
-    
-    // Getters and setters
+
+    // Getters et Setters
     public Long getId() {
         return id;
     }
@@ -51,12 +46,12 @@ public class Personne {
         this.nom = nom;
     }
 
-    public String getEmail() {
-        return email;
+    public String getPrenom() {
+        return prenom;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setPrenom(String prenom) {
+        this.prenom = prenom;
     }
 
     public String getMotDePasse() {
@@ -67,14 +62,6 @@ public class Personne {
         this.motDePasse = motDePasse;
     }
 
-    public String getAdresse() {
-        return adresse;
-    }
-
-    public void setAdresse(String adresse) {
-        this.adresse = adresse;
-    }
-
     public String getNumTel() {
         return numTel;
     }
@@ -83,11 +70,11 @@ public class Personne {
         this.numTel = numTel;
     }
 
-    public String getRole() {
+    public Role getRole() {
         return role;
     }
 
-    public void setRole(String role) {
+    public void setRole(Role role) {
         this.role = role;
     }
 }

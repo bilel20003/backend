@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.centre.service.model.Personne;
+import com.centre.service.model.Role;  // Import de l'enum Role
 import com.centre.service.repository.PersonneRepository;
 
 @RestController
@@ -59,6 +60,11 @@ public class PersonneController {
     // Méthode pour créer une nouvelle personne
     @PostMapping
     public ResponseEntity<?> createPersonne(@RequestBody Personne newPersonne) {
+        // Validation du rôle
+        if (newPersonne.getRole() == null || !isValidRole(newPersonne.getRole())) {
+            return ResponseEntity.status(400).body("Rôle invalide. Les rôles valides sont : CLIENT, GUICHETIER, ADMIN, TECHNICIEN, DIRECTEUR_DACA.");
+        }
+
         try {
             Personne savedPersonne = personneRepository.save(newPersonne);
             return ResponseEntity.ok(savedPersonne);
@@ -73,16 +79,34 @@ public class PersonneController {
         Optional<Personne> existingPersonne = personneRepository.findById(id);
         if (existingPersonne.isPresent()) {
             Personne personne = existingPersonne.get();
+            
+            // Validation du rôle
+            if (updatedPersonne.getRole() == null || !isValidRole(updatedPersonne.getRole())) {
+                return ResponseEntity.status(400).body("Rôle invalide. Les rôles valides sont : CLIENT, GUICHETIER, ADMIN, TECHNICIEN, DIRECTEUR_DACA.");
+            }
+
+            // Mise à jour des champs
             personne.setNom(updatedPersonne.getNom());
-            personne.setEmail(updatedPersonne.getEmail());
+            personne.setPrenom(updatedPersonne.getPrenom());
             personne.setMotDePasse(updatedPersonne.getMotDePasse());
-            personne.setAdresse(updatedPersonne.getAdresse());
             personne.setNumTel(updatedPersonne.getNumTel());
             personne.setRole(updatedPersonne.getRole());
+
             personneRepository.save(personne);
             return ResponseEntity.ok(personne);
         } else {
             return ResponseEntity.status(404).body("Personne avec l'ID " + id + " non trouvée.");
+        }
+    }
+
+    // Méthode pour valider si le rôle est valide
+    private boolean isValidRole(Role role) {
+        try {
+            // Utilisez la méthode name() pour obtenir la valeur en chaîne de caractères de l'enum
+            Role.valueOf(role.name());  
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
         }
     }
 }
