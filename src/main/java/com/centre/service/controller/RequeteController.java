@@ -51,16 +51,24 @@ public class RequeteController {
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteRequete(@PathVariable Long id) {
         try {
+            // Vérifie si la requête existe
             if (!requeteRepository.existsById(id)) {
                 return ResponseEntity.status(404).body("Requête avec l'ID " + id + " non trouvée.");
             } else {
+                // Supprime la requête
                 requeteRepository.deleteById(id);
+
+                // Vérifie si la suppression a bien eu lieu
+                if (requeteRepository.existsById(id)) {
+                    return ResponseEntity.status(500).body("Erreur lors de la suppression de la requête.");
+                }
                 return ResponseEntity.ok("Requête supprimée avec succès !");
             }
         } catch (Exception e) {
             return ResponseEntity.status(500).body("Erreur lors de la suppression de la requête.");
         }
     }
+
 
     // Créer une nouvelle requête
     @PostMapping

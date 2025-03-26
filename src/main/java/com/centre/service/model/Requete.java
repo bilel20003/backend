@@ -1,7 +1,7 @@
 package com.centre.service.model;
 
-import java.util.Date;
 import jakarta.persistence.*;
+import java.util.Date;
 
 @Entity
 public class Requete {
@@ -19,6 +19,19 @@ public class Requete {
 
     private String noteRetour;
     private Date date;
+
+    // Relations avec les autres entités
+    @ManyToOne
+    @JoinColumn(name = "client_id", nullable = false)  // Le client crée la requête
+    private Personne client;
+
+    @ManyToOne
+    @JoinColumn(name = "guichetier_id", nullable = false)  // Le guichetier reçoit et traite la requête
+    private Personne guichetier;
+
+    @ManyToOne
+    @JoinColumn(name = "technicien_id")  // Le technicien peut être assigné à la requête
+    private Personne technicien;
 
     // Getters et Setters
     public Long getId() {
@@ -75,5 +88,29 @@ public class Requete {
 
     public void setDate(Date date) {
         this.date = date;
+    }
+
+    public Personne getClient() {
+        return client;
+    }
+
+    public void setClient(Personne client) {
+        this.client = client;
+    }
+
+    public Personne getGuichetier() {
+        return guichetier;
+    }
+
+    public void setGuichetier(Personne guichetier) {
+        this.guichetier = guichetier;
+    }
+
+    public Personne getTechnicien() {
+        return technicien;
+    }
+
+    public void setTechnicien(Personne technicien) {
+        this.technicien = technicien;
     }
 }
