@@ -9,23 +9,26 @@ public class Personne {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    
     private String nom;
-    private String prenom; // Ajout du prénom
+    private String prenom;
     private String motDePasse;
     private String numTel;
+    
+    private String email;  // Champ email ajouté sans annotation
 
     @Enumerated(EnumType.STRING) // Stocke la valeur sous forme de texte dans la BDD
-    private Role role; // Restriction des valeurs possibles
+    private Role role;
 
     // Constructeurs
     public Personne() {}
 
-    public Personne(String nom, String prenom, String motDePasse, String numTel, Role role) {
+    public Personne(String nom, String prenom, String motDePasse, String numTel, String email, Role role) {
         this.nom = nom;
         this.prenom = prenom;
         this.motDePasse = motDePasse;
         this.numTel = numTel;
+        this.email = email;  // Le champ email est initialisé
         this.role = role;
     }
 
@@ -68,6 +71,14 @@ public class Personne {
 
     public void setNumTel(String numTel) {
         this.numTel = numTel;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public Role getRole() {

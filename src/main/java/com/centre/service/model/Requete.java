@@ -1,8 +1,6 @@
 package com.centre.service.model;
 
-
 import java.util.Date;
-
 import jakarta.persistence.*;
 
 @Entity
@@ -13,11 +11,16 @@ public class Requete {
     private Long id;
 
     private String type;
-    private String status;
-    private Date date;
-    private Date time;
+    private String objet;
+    private String description;
+    
+    @Enumerated(EnumType.STRING)
+    private EtatRequete etat; // Enum pour les états possibles
 
-    // Getters and setters
+    private String noteRetour;
+    private Date date;
+
+    // Getters et Setters
     public Long getId() {
         return id;
     }
@@ -34,12 +37,36 @@ public class Requete {
         this.type = type;
     }
 
-    public String getStatus() {
-        return status;
+    public String getObjet() {
+        return objet;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setObjet(String objet) {
+        this.objet = objet;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public EtatRequete getEtat() {
+        return etat;
+    }
+
+    public void setEtat(EtatRequete etat) {
+        this.etat = etat;
+    }
+
+    public String getNoteRetour() {
+        return noteRetour;
+    }
+
+    public void setNoteRetour(String noteRetour) {
+        this.noteRetour = noteRetour;
     }
 
     public Date getDate() {
@@ -48,13 +75,5 @@ public class Requete {
 
     public void setDate(Date date) {
         this.date = date;
-    }
-
-    public Date getTime() {
-        return time;
-    }
-
-    public void setTime(Date time) {
-        this.time = time;
     }
 }
