@@ -14,7 +14,7 @@ public class Rdv {
     private String description;
     private String status;
     private String typeProbleme;
-
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "date_envoi")
     private Date dateEnvoi;
 

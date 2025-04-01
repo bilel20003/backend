@@ -4,17 +4,21 @@ import com.centre.service.model.Requete;
 import com.centre.service.model.EtatRequete;
 import com.centre.service.model.Personne;
 import com.centre.service.repository.RequeteRepository;
-
+import com.centre.service.repository.PersonneRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.Optional;
 
 @Service
 public class RequeteService {
 
     @Autowired
     private RequeteRepository requeteRepository;
+
+    @Autowired
+    private PersonneRepository personneRepository;
 
     // Créer une nouvelle requête
     public Requete creerRequete(Personne client, Personne guichetier, String type, String objet, String description) {
@@ -32,11 +36,22 @@ public class RequeteService {
     }
 
     // Méthode pour assigner un technicien à une requête
-    public Requete assignerTechnicien(Long requeteId, Personne technicien) {
-        Requete requete = requeteRepository.findById(requeteId)
-                .orElseThrow(() -> new RuntimeException("Requête non trouvée"));
+    public Requete assignTechnician(Long requeteId, Long technicienId) throws Exception {
+        Optional<Requete> optionalRequete = requeteRepository.findById(requeteId);
+        if (!optionalRequete.isPresent()) {
+            throw new Exception("Requête non trouvée.");
+        }
 
+        Requete requete = optionalRequete.get();
+
+        Optional<Personne> optionalTechnicien = personneRepository.findById(technicienId);
+        if (!optionalTechnicien.isPresent() || !optionalTechnicien.get().getRole().equals("TECHNICIEN")) {
+            throw new Exception("Technicien non trouvé ou rôle incorrect.");
+        }
+
+        Personne technicien = optionalTechnicien.get();
         requete.setTechnicien(technicien);
+
         return requeteRepository.save(requete);
     }
 

@@ -1,5 +1,6 @@
 package com.centre.service.controller;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import com.centre.service.model.Requete;
 import com.centre.service.model.EtatRequete;
 import com.centre.service.repository.RequeteRepository;
+import com.centre.service.service.RequeteService;
 
 @RestController
 @RequestMapping("/api/requetes")
@@ -18,17 +20,21 @@ public class RequeteController {
     @Autowired
     private RequeteRepository requeteRepository;
 
+    @Autowired
+    private RequeteService requeteService;  // Injecting the service
+
     // Récupérer toutes les requêtes
     @GetMapping
     public ResponseEntity<?> getAllRequetes() {
         try {
             List<Requete> requetes = requeteRepository.findAll();
             if (requetes.isEmpty()) {
-                return ResponseEntity.status(404).body("Aucune requête trouvée.");
+                return ResponseEntity.ok(Collections.emptyList()); // Retourner une liste vide avec 200 OK
             }
             return ResponseEntity.ok(requetes);
         } catch (Exception e) {
-            return ResponseEntity.status(500).body("Erreur interne du serveur.");
+            e.printStackTrace(); // Ajout du log pour voir l'erreur
+            return ResponseEntity.status(500).body("Erreur interne du serveur : " + e.getMessage());
         }
     }
 
@@ -69,7 +75,6 @@ public class RequeteController {
         }
     }
 
-
     // Créer une nouvelle requête
     @PostMapping
     public ResponseEntity<?> createRequete(@RequestBody Requete newRequete) {
@@ -78,7 +83,7 @@ public class RequeteController {
             if (newRequete.getEtat() == null || !isValidEtat(newRequete.getEtat())) {
                 return ResponseEntity.status(400).body("État invalide. Les états valides sont : NOUVEAU, BROUILLON, EN_COURS_DE_TRAITEMENT, REFUSEE, TRAITEE.");
             }
-
+            
             Requete savedRequete = requeteRepository.save(newRequete);
             return ResponseEntity.ok(savedRequete);
         } catch (Exception e) {
@@ -124,6 +129,17 @@ public class RequeteController {
             return true;
         } catch (IllegalArgumentException e) {
             return false;
+        }
+    }
+
+    // Assigner un technicien à une requête
+    @PutMapping("/{id}/assign-technician")
+    public ResponseEntity<?> assignTechnicianToRequete(@PathVariable Long id, @RequestBody Long technicienId) {
+        try {
+            Requete updatedRequete = requeteService.assignTechnician(id, technicienId);  // Correctly call service method
+            return ResponseEntity.ok(updatedRequete);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Erreur lors de l'assignation du technicien.");
         }
     }
 }

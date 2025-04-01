@@ -14,7 +14,7 @@ public class Personne {
     private String prenom;
     private String motDePasse;
     private String numTel;
-    
+    @Column(unique = true)
     private String email;  // Champ email ajouté sans annotation
 
     @Enumerated(EnumType.STRING) // Stocke la valeur sous forme de texte dans la BDD

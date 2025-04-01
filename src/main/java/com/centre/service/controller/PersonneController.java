@@ -7,9 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.centre.service.model.EtatRequete;
 import com.centre.service.model.Personne;
+import com.centre.service.model.Requete;
 import com.centre.service.model.Role;
 import com.centre.service.repository.PersonneRepository;
+import com.centre.service.repository.RequeteRepository;
 
 @RestController
 @RequestMapping("/api/personnes")
@@ -17,6 +20,9 @@ public class PersonneController {
 
     @Autowired
     private PersonneRepository personneRepository;
+
+    @Autowired
+    private RequeteRepository requeteRepository; // Add this line to autowire RequeteRepository
 
     // Récupérer toutes les personnes
     @GetMapping
@@ -115,6 +121,48 @@ public class PersonneController {
             return true;
         } catch (IllegalArgumentException e) {
             return false;
+        }
+    }
+    
+    // Récupérer tous les techniciens disponibles
+    @GetMapping("/techniciens")
+    public ResponseEntity<?> getAllTechniciens() {
+        try {
+            List<Personne> techniciens = personneRepository.findByRole(Role.TECHNICIEN);
+            if (techniciens.isEmpty()) {
+                return ResponseEntity.status(404).body("Aucun technicien trouvé.");
+            }
+            return ResponseEntity.ok(techniciens);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Erreur interne du serveur lors de la récupération des techniciens.");
+        }
+    }
+
+    // Assigner un technicien à une requête
+    @PutMapping("/{id}/assigner-technicien")
+    public ResponseEntity<?> assignTechnician(@PathVariable Long id, @RequestBody Long technicianId) {
+        try {
+            Optional<Requete> requeteOptional = requeteRepository.findById(id); // Use the injected requeteRepository here
+            if (!requeteOptional.isPresent()) {
+                return ResponseEntity.status(404).body("Requête avec l'ID " + id + " non trouvée.");
+            }
+
+            Optional<Personne> technicienOptional = personneRepository.findById(technicianId);
+            if (!technicienOptional.isPresent() || technicienOptional.get().getRole() != Role.TECHNICIEN) {
+                return ResponseEntity.status(400).body("Technicien avec l'ID " + technicianId + " non trouvé ou rôle incorrect.");
+            }
+
+            Requete requete = requeteOptional.get();
+            Personne technicien = technicienOptional.get();
+            
+            // Assigner le technicien à la requête
+            requete.setTechnicien(technicien);  // Assurez-vous que la classe Requete a un champ `technicien`
+            requete.setEtat(EtatRequete.EN_COURS_DE_TRAITEMENT); // Vous pouvez également modifier l'état de la requête
+            requeteRepository.save(requete);
+
+            return ResponseEntity.ok(requete);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Erreur lors de l'assignation du technicien.");
         }
     }
 }
