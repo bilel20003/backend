@@ -1,36 +1,32 @@
 package com.centre.service.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor; // Ajoutez cette ligne
+import lombok.NoArgsConstructor;
+
+import java.io.Serializable;
 
 @Entity
-@Table(name = "personne") // Nom explicite pour la table
-public class Personne {
+@Table // Nom explicite pour la table
+@AllArgsConstructor
+@NoArgsConstructor
+public class UserInfo implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
+
     private String nom;
     private String prenom;
+    private String status;
     private String motDePasse;
     private String numTel;
-    @Column(unique = true)
-    private String email;  // Champ email ajouté sans annotation
+    private String email;
 
-    @Enumerated(EnumType.STRING) // Stocke la valeur sous forme de texte dans la BDD
+    @Enumerated(EnumType.STRING)
     private Role role;
 
-    // Constructeurs
-    public Personne() {}
-
-    public Personne(String nom, String prenom, String motDePasse, String numTel, String email, Role role) {
-        this.nom = nom;
-        this.prenom = prenom;
-        this.motDePasse = motDePasse;
-        this.numTel = numTel;
-        this.email = email;  // Le champ email est initialisé
-        this.role = role;
-    }
+    
 
     // Getters et Setters
     public Long getId() {
@@ -39,6 +35,14 @@ public class Personne {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public String getNom() {
@@ -88,4 +92,6 @@ public class Personne {
     public void setRole(Role role) {
         this.role = role;
     }
+
+    
 }

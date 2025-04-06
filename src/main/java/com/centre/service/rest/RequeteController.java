@@ -1,4 +1,4 @@
-package com.centre.service.controller;
+package com.centre.service.rest;
 
 import java.util.Collections;
 import java.util.List;
